@@ -177,8 +177,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                 self.loadingStory = true
                 // 加载更多数据
                 loadmore()
-                
-                
                 print(self.stories.count)
             }
         }

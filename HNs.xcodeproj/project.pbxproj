@@ -58,6 +58,7 @@
 		31185D632771A57000CAFBE2 /* HNsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNsUITests.swift; sourceTree = "<group>"; };
 		31185D652771A57000CAFBE2 /* HNsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNsUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		31185D8C2772CE5900CAFBE2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		31371F0427746EB800797185 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +96,7 @@
 		31185D362771A56700CAFBE2 = {
 			isa = PBXGroup;
 			children = (
+				31371F0427746EB800797185 /* README.md */,
 				31185D412771A56700CAFBE2 /* HNs */,
 				31185D582771A57000CAFBE2 /* HNsTests */,
 				31185D622771A57000CAFBE2 /* HNsUITests */,
