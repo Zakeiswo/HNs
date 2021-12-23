@@ -13,9 +13,9 @@ An iOS app for Hacker News ( Swift viersion )
 1. `git clone https://github.com/Zakeiswo/HNs.git`
 2. [install Firebase v8.10.0](https://github.com/firebase/firebase-ios-sdk/blob/master/SwiftPackageManager.md) through [Swift Package Manager](https://swift.org/package-manager/)
 
-## Gifs
+## Gif
 
-
+<iframe width=500 src="./show.gif">
 
 
 
