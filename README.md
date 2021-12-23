@@ -15,7 +15,7 @@ An iOS app for Hacker News ( Swift viersion )
 
 ## Gif
 
-![img](./show.gif)
+![img](https://github.com/Zakeiswo/HNs/blob/main/show.GIF)
 
 
 
