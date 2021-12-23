@@ -180,6 +180,13 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                 print(self.stories.count)
             }
         }
+        
+        //refresh
+        // 查看是否是在刷新
+        if self.refreshControl.isRefreshing == true && scrollView.isDecelerating{
+            retrievingStory = true
+            retrieveStories()
+        }
     }
     
     //refresh
@@ -192,6 +199,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         //isLoadingMore = true
 //        print(retrievingStory!)
         // 小菊花开始转动
+//        retrievingStory = true
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
 //        retrievingStory = true
         // 刷新的时候需要将之前loadmore的数量复原
