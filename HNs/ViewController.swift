@@ -2,7 +2,6 @@
 //  ViewController.swift
 //  HNs
 //
-//
 
 import UIKit
 import Firebase
