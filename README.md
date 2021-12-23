@@ -15,7 +15,7 @@ An iOS app for Hacker News ( Swift viersion )
 
 ## Gif
 
-<iframe width=500 src="./show.gif">
+![img](./show.gif)
 
 
 
