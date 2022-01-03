@@ -24,6 +24,8 @@
 		31185D812771BA3300CAFBE2 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 31185D802771BA3300CAFBE2 /* FirebaseRemoteConfig */; };
 		31185D832771BA3300CAFBE2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 31185D822771BA3300CAFBE2 /* FirebaseStorage */; };
 		31185D8D2772CE5900CAFBE2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 31185D8C2772CE5900CAFBE2 /* GoogleService-Info.plist */; };
+		3183C261278328C9002ABC8B /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3183C260278328C9002ABC8B /* Stories.swift */; };
+		3183C263278332F5002ABC8B /* request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3183C262278332F5002ABC8B /* request.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,8 @@
 		31185D8C2772CE5900CAFBE2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		31371F0427746EB800797185 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		31371F0627747A2300797185 /* show.GIF */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = show.GIF; sourceTree = "<group>"; };
+		3183C260278328C9002ABC8B /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
+		3183C262278332F5002ABC8B /* request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = request.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,10 +127,12 @@
 				31185D422771A56700CAFBE2 /* AppDelegate.swift */,
 				31185D442771A56700CAFBE2 /* SceneDelegate.swift */,
 				31185D462771A56700CAFBE2 /* ViewController.swift */,
+				3183C260278328C9002ABC8B /* Stories.swift */,
 				31185D482771A56700CAFBE2 /* Main.storyboard */,
 				31185D4B2771A56F00CAFBE2 /* Assets.xcassets */,
 				31185D4D2771A56F00CAFBE2 /* LaunchScreen.storyboard */,
 				31185D502771A56F00CAFBE2 /* Info.plist */,
+				3183C262278332F5002ABC8B /* request.swift */,
 			);
 			path = HNs;
 			sourceTree = "<group>";
@@ -295,6 +301,8 @@
 				31185D472771A56700CAFBE2 /* ViewController.swift in Sources */,
 				31185D432771A56700CAFBE2 /* AppDelegate.swift in Sources */,
 				31185D452771A56700CAFBE2 /* SceneDelegate.swift in Sources */,
+				3183C263278332F5002ABC8B /* request.swift in Sources */,
+				3183C261278328C9002ABC8B /* Stories.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

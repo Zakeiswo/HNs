@@ -200,7 +200,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 //        print(retrievingStory!)
         // 小菊花开始转动
 //        retrievingStory = true
-        guard #available(iOS 13.0, *) else{
+        guard #available(iOS 13.0, *){
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
         }
 //        retrievingStory = true
