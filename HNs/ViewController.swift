@@ -200,7 +200,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 //        print(retrievingStory!)
         // 小菊花开始转动
 //        retrievingStory = true
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        guard #available(iOS 13.0, *) else{
+            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        }
 //        retrievingStory = true
         // 刷新的时候需要将之前loadmore的数量复原
         loadmoreLimitaion = 0
@@ -226,7 +228,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
                         self.refreshControl.endRefreshing()
                         // 设置flag 为false
                         self.retrievingStory = false
-                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                        guard #available(iOS 13.0, *) else{
+                            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                        }
                     }
                     // TODO with Error
                 }, withCancel: self.loadingFailed(_:))
@@ -309,7 +313,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         self.stories.removeAll()
         self.tableView.reloadData()
         self.showErrorMessage(self.FetchErrorMessage) //Error
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        guard #available(iOS 13.0, *) else{
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        }
     }
     // Error
     //展示了对应的错误信息
