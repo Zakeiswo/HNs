@@ -8,9 +8,20 @@
 import Foundation
 // 数据模型
 
-struct Storylist{
+class Storylist:NSObject{
     var type:StoryType!
     var list:[Story]
+    // dic
+    let StoryTypeChildRefMap = [StoryType.top: "topstories", .new: "newstories", .show: "showstories"]
+    // init
+    override init() {
+        type = StoryType.top
+        list = []
+    }
+    init(type:StoryType) {
+        self.type = type
+        list = []
+    }
 }
 
 
@@ -29,7 +40,7 @@ struct Story{
     let text: String? // 感觉大多数没有文本
     let time: Int
     let type: String
-    let kids: [Int] // The ids of the item's comments, in ranked display order.
+    let kids: [Int]? // The ids of the item's comments, in ranked display order.
     let descendants: Int // 评论数量 the total comment count.
 }
 
@@ -52,4 +63,11 @@ extension Story{
         return String(format: "%.1fK", Double(descendants) / 1000)
         // 这里强制转化保证是个小数,要不然除了之后还是一个整数
     }
+}
+
+// 重新得到一个list
+func loadListData(type:StoryType, withCancel:((Error) -> Void)? = nil) -> Storylist {
+    let relist = Storylist(type: type)
+    BaseManager.shared.retrieveStories(loadList: relist, withCancel: withCancel)
+    return relist
 }

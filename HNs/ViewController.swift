@@ -200,7 +200,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 //        print(retrievingStory!)
         // 小菊花开始转动
 //        retrievingStory = true
-        guard #available(iOS 13.0, *){
+        guard #available(iOS 13.0, *) else{
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
         }
 //        retrievingStory = true
@@ -319,7 +319,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     }
     // Error
     //展示了对应的错误信息
-    func showErrorMessage(_ message: String) {
+    @objc func showErrorMessage(_ message: String) {
       errorMessageLabel.text = message
       self.tableView.backgroundView = errorMessageLabel
       self.tableView.separatorStyle = .none
