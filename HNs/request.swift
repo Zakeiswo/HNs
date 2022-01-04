@@ -21,6 +21,11 @@ class BaseManager{
     let v0ChildRef = "v0"
     let itemChildRef = "item"
     
+    //init
+    init(){
+        // 指定要向其中写入数据的位置
+        self.ref = Database.database(url:self.fireBaseRef).reference()
+    }
     
     //refresh
     @objc func retrieveStories(loadList:Storylist,storyLimitaion:UInt ,withCancel:((Error) -> Void)? = nil){

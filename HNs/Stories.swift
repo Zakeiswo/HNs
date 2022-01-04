@@ -22,6 +22,15 @@ class Storylist:NSObject{
         self.type = type
         list = []
     }
+    // 清理
+    func clearer(){
+        list.removeAll()
+    }
+    // 返回总数
+    func getcount() -> Int{
+        return list.count
+    }
+    
 }
 
 
@@ -65,9 +74,9 @@ extension Story{
     }
 }
 
-// 重新得到一个list
-func loadListData(type:StoryType, withCancel:((Error) -> Void)? = nil) -> Storylist {
+
+func loadListData(type:StoryType,storyLimitation:UInt, withCancel:((Error) -> Void)? = nil) -> Storylist {
     let relist = Storylist(type: type)
-    BaseManager.shared.retrieveStories(loadList: relist, withCancel: withCancel)
+    BaseManager.shared.retrieveStories(loadList: relist, storyLimitaion: storyLimitation, withCancel: withCancel)
     return relist
 }
