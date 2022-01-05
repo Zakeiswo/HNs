@@ -46,16 +46,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         refreshControl = UIRefreshControl()
         userData = UserData(withCancel: loadingFailed(_:))
        }
-//
-//    required init?(coder: NSCoder) {
-//        refreshControl = UIRefreshControl()
-//    }
-//
-//    convenience init() {
-//        self.init()
-//        userData = UserData(withCancel: loadingFailed(_:))
-//
-//    }
     
     // tableview
     //返回一组单元格的行数
@@ -100,7 +90,17 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         configureUI()
         // 开始的时候就应该检索一次
         userData!.retrievingStory = true
+        // 这里应该改成成功再执行闭包
+//        userData.retrievedefault(withCancel: nil)
+//        refreshControl = UIRefreshControl()
+        
+//        userData.retrievedefaultmNil(reload: tableView.reloadData())
     }
+//    // willappear
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        tableView.reloadData()
+//    }
 
     
     // 配置UI
@@ -160,7 +160,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             if userData.isLoadingMore == false{
                 userData.loadingStory = true
                 userData.loadmoredefault(withCancel: nil)
-                print(userData.getDefaultStoryCount())
+                tableView.reloadData()
+//                print(userData.getDefaultStoryCount())
             }
         }
         
@@ -169,6 +170,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         if self.refreshControl.isRefreshing == true && scrollView.isDecelerating{
             userData.retrievingStory = true
             userData.retrievedefault(withCancel: nil)
+            tableView.reloadData()
         }
     }
     
@@ -182,17 +184,18 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     // segment change the type
     @objc func changeStoryType(_ sender: UISegmentedControl){
         if sender.selectedSegmentIndex == 0{
-            userData.defaulttype = .top
+            userData.setdefaultList(type: .top)
         } else if sender.selectedSegmentIndex == 1{
-            userData.defaulttype = .new
+            userData.setdefaultList(type: .new)
         } else if sender.selectedSegmentIndex == 2{
-            userData.defaulttype = .show
+            userData.setdefaultList(type: .show)
         } else {
             print{"Segment Error!"}
         }
         // 完事会触发刷新
         userData.retrievingStory = true
         userData.retrievedefault(withCancel: nil)
+        tableView.reloadData()
     }
     // fail
     func loadingFailed(_ error: Error?) -> Void {

@@ -29,24 +29,38 @@ class BaseManager{
     
     //refresh
     @objc func retrieveStories(loadList:Storylist,storyLimitaion:UInt ,withCancel:((Error) -> Void)? = nil){
-
+        var count = storyLimitaion
         var storiesMap = [Int:Story]()
-        let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:storyLimitaion )
+        let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:count )
         // 通过observeSingleEvent监听,single的话返回后就立刻取消
         query.observeSingleEvent(of: .value, with: { snapshot in
+            if !snapshot.exists(){
+                print("Fail to loading the data of the snapshot during func retrieve")
+                return
+            }
             let storyIds = snapshot.value as! [Int]
             for storyId in storyIds {
                 let q = self.ref.child(self.v0ChildRef).child(self.itemChildRef).child(String(storyId))
+                // 有时候可以获得id,但是snapshot是null
                 q.observeSingleEvent(of: .value, with: { snapshot in
-                    storiesMap[storyId] = self.snapshot2Story(snapshot)
-                    if storiesMap.count == Int(storyLimitaion){
+                    // 不为空的靠exists判断
+                    if snapshot.exists(){
+                        storiesMap[storyId] = self.snapshot2Story(snapshot)
+                    }
+                    else{
+                        // 为空的时候减去这个部分
+                        count = count - 1
+                        print("Missing the data of the snapshot during func retrieveStories")
+                    }
+                    
+                    if storiesMap.count == Int(count){
                         var sortedStories = [Story]()
                         // 将字典转化为数组
                         for storyId in storyIds {
                             sortedStories.append(storiesMap[storyId]!)
                         }
                         loadList.list = sortedStories
-
+                        print(loadList.list.count)
                     }
                     // TODO with Error
                 }, withCancel: withCancel)
@@ -58,14 +72,27 @@ class BaseManager{
     // load more
     func loadmore(loadList:Storylist,storyLimitaion:UInt, withCancel:((Error) -> Void)? = nil){
         var storiesMap = [Int:Story]()
+        var count = storyLimitaion
         // 需要通过
         let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst: storyLimitaion)
         query.observeSingleEvent(of: .value, with: { snapshot in
+            // 要是开始就没有
+            if !snapshot.exists(){
+                print("Fail to loading the data of the snapshot during func loadmore")
+                return
+            }
             let storyIds = snapshot.value as! [Int]
             for storyId in storyIds {
                 let q = self.ref.child(self.v0ChildRef).child(self.itemChildRef).child(String(storyId))
                 q.observeSingleEvent(of: .value, with: { snapshot in
-                    storiesMap[storyId] = self.snapshot2Story(snapshot)
+                    // snapshot可能出现原本的id非空,但是snapshot为空的情况
+                    if snapshot.exists() {
+                        storiesMap[storyId] = self.snapshot2Story(snapshot)
+                    }
+                    else{
+                        count = count - 1
+                        print("Missing the data of the snapshot during func loadmore")
+                    }
                     if storiesMap.count == Int(storyLimitaion){
                         var sortedStories = [Story]()
                         // 将字典转化为数组
@@ -84,7 +111,6 @@ class BaseManager{
     
     // snapshot to story
     func snapshot2Story(_ snapshot: DataSnapshot) -> Story{
-        
         let data = snapshot.value as! Dictionary<String, Any>
         let id = data["id"] as! Int
         let title = data["title"] as! String
@@ -95,7 +121,8 @@ class BaseManager{
         let time = data["time"] as! Int
         let type = data["type"] as! String
         let kids = data["kids"] as? [Int]
-        let descendants = data["descendants"] as! Int
+        let descendants = data["descendants"] as? Int
+        
         return Story(id: id,title: title, url: url, by: by, score: score, text: text,time: time,type: type,kids: kids, descendants: descendants)
     }
     

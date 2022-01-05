@@ -102,6 +102,11 @@ class UserData{
     // default refresh
     func retrievedefault(withCancel:((Error) -> Void)? = nil){
         BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(), withCancel: withCancel)
+        print(getdefaultList().list.count)
+    }
+    // default refresh nil
+    func retrievedefaultmNil(reload: ()){
+        BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(), withCancel: nil)
     }
     // default loadmore
     func loadmoredefault(withCancel:((Error) -> Void)? = nil){

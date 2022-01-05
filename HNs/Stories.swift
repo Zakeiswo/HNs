@@ -50,7 +50,7 @@ struct Story{
     let time: Int
     let type: String
     let kids: [Int]? // The ids of the item's comments, in ranked display order.
-    let descendants: Int // 评论数量 the total comment count.
+    let descendants: Int? // 评论数量 the total comment count.
 }
 
 // 扩展
@@ -65,18 +65,24 @@ extension Story{
     // 显示评论数
     var commentCountText: String {
         // 要是是一个无评论的就是显示字
-        if descendants <= 0 { return "评论" }
-        // 要是小于1k就显示数量
-        if descendants < 1000 { return "\(descendants)" }
-        // 要是大于1k就是缩写
-        return String(format: "%.1fK", Double(descendants) / 1000)
-        // 这里强制转化保证是个小数,要不然除了之后还是一个整数
+        if let number = descendants {
+            if number <= 0 { return "评论" }
+            // 要是小于1k就显示数量
+            if number < 1000 { return "\(number)" }
+            // 要是大于1k就是缩写
+            return String(format: "%.1fK", Double(number) / 1000)
+            // 这里强制转化保证是个小数,要不然除了之后还是一个整数
+        }
+        else{
+            return "评论"
+        }
     }
 }
 
 
 func loadListData(type:StoryType,storyLimitation:UInt, withCancel:((Error) -> Void)? = nil) -> Storylist {
-    let relist = Storylist(type: type)
+    let relist:Storylist = Storylist(type: type)
+    
     BaseManager.shared.retrieveStories(loadList: relist, storyLimitaion: storyLimitation, withCancel: withCancel)
     return relist
 }
