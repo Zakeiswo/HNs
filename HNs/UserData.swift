@@ -44,25 +44,17 @@ class UserData{
         isLoadingMore = false
         
     
-        toplist = loadListData(type: .top,storyLimitation: topLimitation, withCancel: nil)
-        newlist = loadListData(type: .new,storyLimitation: newLimitation, withCancel: nil)
-        showlist = loadListData(type: .show, storyLimitation: showLimitation ,withCancel: nil)
+        toplist = Storylist()
+        newlist = Storylist()
+        showlist = Storylist()
         
         listTypeMap = [StoryType.top: toplist, StoryType.new: newlist, StoryType.show: showlist]
     }
     
-    init(withCancel:((Error) -> Void)?){
-        defaulttype = .top
-        retrievingStory = false
-        loadingStory = false
-        loadmoreLimitaion = 0 // 最初这个加载更多的限制值为0
-        isLoadingMore = false
-        
-        toplist = loadListData(type: .top,storyLimitation: topLimitation, withCancel: withCancel)
-        newlist = loadListData(type: .new,storyLimitation: newLimitation, withCancel: withCancel)
-        showlist = loadListData(type: .show, storyLimitation: showLimitation ,withCancel: withCancel)
-        
-        listTypeMap = [StoryType.top: toplist, StoryType.new: newlist, StoryType.show: showlist]
+    func loadList(completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
+        self.toplist = loadListData(type: .top,storyLimitation: topLimitation,completionHandler: completionHandler,withCancel: withCancel)
+        self.newlist = loadListData(type: .new,storyLimitation: newLimitation, completionHandler: completionHandler,withCancel: withCancel)
+        self.showlist = loadListData(type: .show, storyLimitation: showLimitation ,completionHandler: completionHandler,withCancel: withCancel)
     }
     // fail
     func loadingDataFailded(){
@@ -88,29 +80,29 @@ class UserData{
     func getdefaultlimit()->UInt{
         switch self.defaulttype {
         case .top:
-            return topLimitation
+            return self.topLimitation
         case .new:
-            return newLimitation
+            return self.newLimitation
         case .show:
-            return showLimitation
+            return self.showLimitation
         }
     }
     // get the count of default story
     func getDefaultStoryCount() -> Int{
-        return getdefaultList().getcount()
+        return self.getdefaultList().getcount()
     }
     // default refresh
-    func retrievedefault(withCancel:((Error) -> Void)? = nil){
-        BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(), withCancel: withCancel)
-        print(getdefaultList().list.count)
+    func retrievedefault(completionHandler: @escaping ()->Void ,withCancel:((Error) -> Void)? = nil){
+        
+        let listTemp = self.getdefaultList()
+        print(listTemp)
+        BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
+        print(self.getdefaultList().list.count)
     }
-    // default refresh nil
-    func retrievedefaultmNil(reload: ()){
-        BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(), withCancel: nil)
-    }
+
     // default loadmore
-    func loadmoredefault(withCancel:((Error) -> Void)? = nil){
-        BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(), withCancel: withCancel)
+    func loadmoredefault(completionHandler:(()->Void)? = nil, withCancel:((Error) -> Void)? = nil){
+        BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
     }
     
     

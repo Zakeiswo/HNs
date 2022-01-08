@@ -20,15 +20,18 @@ class BaseManager{
     let fireBaseRef = "https://hacker-news.firebaseio.com/"
     let v0ChildRef = "v0"
     let itemChildRef = "item"
+
     
     //init
     init(){
         // 指定要向其中写入数据的位置
         self.ref = Database.database(url:self.fireBaseRef).reference()
+        
     }
     
     //refresh
-    @objc func retrieveStories(loadList:Storylist,storyLimitaion:UInt ,withCancel:((Error) -> Void)? = nil){
+    // 通过逃逸闭包写入list
+    func retrieveStories(loadList:Storylist,storyLimitaion:UInt, completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
         var count = storyLimitaion
         var storiesMap = [Int:Story]()
         let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:count )
@@ -38,8 +41,8 @@ class BaseManager{
                 print("Fail to loading the data of the snapshot during func retrieve")
                 return
             }
-            let storyIds = snapshot.value as! [Int]
-            for storyId in storyIds {
+            var storyIds = snapshot.value as! [Int]
+            for (i, storyId) in storyIds.enumerated() {
                 let q = self.ref.child(self.v0ChildRef).child(self.itemChildRef).child(String(storyId))
                 // 有时候可以获得id,但是snapshot是null
                 q.observeSingleEvent(of: .value, with: { snapshot in
@@ -50,6 +53,7 @@ class BaseManager{
                     else{
                         // 为空的时候减去这个部分
                         count = count - 1
+                        storyIds.remove(at:i)
                         print("Missing the data of the snapshot during func retrieveStories")
                     }
                     
@@ -59,8 +63,12 @@ class BaseManager{
                         for storyId in storyIds {
                             sortedStories.append(storiesMap[storyId]!)
                         }
+                        // 在这执行逃逸闭包
+                        defer{
+                            completionHandler()
+                        }
                         loadList.list = sortedStories
-                        print(loadList.list.count)
+                        
                     }
                     // TODO with Error
                 }, withCancel: withCancel)
@@ -70,7 +78,7 @@ class BaseManager{
     }
     
     // load more
-    func loadmore(loadList:Storylist,storyLimitaion:UInt, withCancel:((Error) -> Void)? = nil){
+    func loadmore(loadList:Storylist,storyLimitaion:UInt, completionHandler: (()->Void)? = nil,withCancel:((Error) -> Void)? = nil){
         var storiesMap = [Int:Story]()
         var count = storyLimitaion
         // 需要通过
@@ -101,6 +109,8 @@ class BaseManager{
                         }
                         // 赋值上去
                         loadList.list = sortedStories
+                        // 在这执行逃逸闭包
+                        completionHandler!()
                     }
                     // TODO with Error
                 },withCancel: withCancel)

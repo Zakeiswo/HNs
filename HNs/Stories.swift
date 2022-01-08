@@ -79,10 +79,9 @@ extension Story{
     }
 }
 
-
-func loadListData(type:StoryType,storyLimitation:UInt, withCancel:((Error) -> Void)? = nil) -> Storylist {
+// 用于读取数据
+func loadListData(type:StoryType,storyLimitation:UInt,completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil) -> Storylist {
     let relist:Storylist = Storylist(type: type)
-    
-    BaseManager.shared.retrieveStories(loadList: relist, storyLimitaion: storyLimitation, withCancel: withCancel)
+    BaseManager.shared.retrieveStories(loadList: relist, storyLimitaion: storyLimitation, completionHandler: completionHandler ,withCancel: withCancel)
     return relist
 }

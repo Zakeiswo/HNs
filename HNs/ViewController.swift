@@ -44,7 +44,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
         refreshControl = UIRefreshControl()
-        userData = UserData(withCancel: loadingFailed(_:))
+        // 将init 和 load 数据分开
+        userData = UserData()
        }
     
     // tableview
@@ -90,6 +91,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         configureUI()
         // 开始的时候就应该检索一次
         userData!.retrievingStory = true
+        // 这里再进行loadlist
+        userData.loadList(completionHandler: reloadTable, withCancel: loadingFailed(_:))
         // 这里应该改成成功再执行闭包
 //        userData.retrievedefault(withCancel: nil)
 //        refreshControl = UIRefreshControl()
@@ -159,8 +162,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             // TODO
             if userData.isLoadingMore == false{
                 userData.loadingStory = true
-                userData.loadmoredefault(withCancel: nil)
-                tableView.reloadData()
+                userData.loadmoredefault(completionHandler: reloadTable, withCancel: nil)
+//                tableView.reloadData()
 //                print(userData.getDefaultStoryCount())
             }
         }
@@ -169,8 +172,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 查看是否是在刷新
         if self.refreshControl.isRefreshing == true && scrollView.isDecelerating{
             userData.retrievingStory = true
-            userData.retrievedefault(withCancel: nil)
-            tableView.reloadData()
+            userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
+//            tableView.reloadData()
         }
     }
     
@@ -194,14 +197,15 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         }
         // 完事会触发刷新
         userData.retrievingStory = true
-        userData.retrievedefault(withCancel: nil)
-        tableView.reloadData()
+        userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
+//        tableView.reloadData()
+        print("reload data ori")
     }
     // fail
     func loadingFailed(_ error: Error?) -> Void {
         // Data clear
         userData.loadingDataFailded()
-        self.tableView.reloadData()
+//        self.tableView.reloadData()
         self.showErrorMessage(self.FetchErrorMessage) //Error
         guard #available(iOS 13.0, *) else{
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -217,7 +221,14 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
     // 包裹refresh
     @objc func viewRetrievedefault(withCancel:((Error) -> Void)? = nil){
-        userData.retrievedefault(withCancel: withCancel)
+        userData.retrievedefault(completionHandler: self.reloadTable, withCancel:  withCancel)
+        print("reload oc")
+    }
+    
+    // reload table
+    func reloadTable() -> Void{
+        self.tableView.reloadData()
+        print("reload data")
     }
 }
 
