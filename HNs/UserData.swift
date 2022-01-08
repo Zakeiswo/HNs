@@ -28,18 +28,18 @@ class UserData{
     
     // load more
 
-    var loadingStory:Bool! // load more flag
     var loadmoreLimitaion:UInt!
+    // 防止重复加载
     var isLoadingMore:Bool! // 是否正在loadmore
-    var retrievingStory:Bool! // refresh flag
+    // 防止重复刷新
+    var isretrievingStory:Bool! // 是否正在refresh
     
     //dic
     let listTypeMap:[StoryType:Storylist]
     
     required init(){
         defaulttype = .top
-        retrievingStory = false
-        loadingStory = false
+        isretrievingStory = false
         loadmoreLimitaion = 0 // 最初这个加载更多的限制值为0
         isLoadingMore = false
         
@@ -59,9 +59,8 @@ class UserData{
     // fail
     func loadingDataFailded(){
         self.defaulttype = .top
-        self.retrievingStory = false
+        self.isretrievingStory = false
         self.isLoadingMore = false
-        self.loadingStory = false
         // 清楚干净
         self.toplist.clearer()
         self.newlist.clearer()

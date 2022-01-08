@@ -34,14 +34,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     let ErrorMessageFontSize: CGFloat = 16
 
     // init
-//    required init?(coder aDecoder: NSCoder) {
-//        super.init(coder:aDecoder)
-//        // 指定要向其中写入数据的位置
-//        refreshControl = UIRefreshControl()
-//        self.userData = UserData(withCancel: loadingFailed)
-//
-//    }
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
         refreshControl = UIRefreshControl()
@@ -93,20 +85,11 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 加载小菊花
         activityIndicator.startAnimating()
         // 开始的时候就应该检索一次
-        userData!.retrievingStory = true
+        userData.isretrievingStory = true
         // 这里再进行loadlist
         userData.loadList(completionHandler: reloadTable, withCancel: loadingFailed(_:))
-        // 这里应该改成成功再执行闭包
-//        userData.retrievedefault(withCancel: nil)
-//        refreshControl = UIRefreshControl()
         
-//        userData.retrievedefaultmNil(reload: tableView.reloadData())
     }
-//    // willappear
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        tableView.reloadData()
-//    }
 
     
     // 配置UI
@@ -157,30 +140,20 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         let scrollContentSizeHeight = scrollView.contentSize.height
         let scrollOffset = scrollView.contentOffset.y
         let space = scrollOffset + scrollViewHeight - scrollContentSizeHeight
-        //space <= self.loadthrehold
-//        print("A")
-//        print(scrollOffset + scrollViewHeight)
-//        print("B")
-//        print(scrollContentSizeHeight)
-        
-        //初始情况scrollContentSizeHeight为0,也会通过这个if,得判断不为0时候
-        
+                
         // 还需要判断是否是离开了手指,不然会触发三次
         if space >= self.loadthrehold && scrollContentSizeHeight != 0.0 && scrollView.isDecelerating{
             // TODO
             if userData.isLoadingMore == false{
-//                userData.loadingStory = true
                 userData.isLoadingMore = true
                 userData.loadmoredefault(completionHandler: reloadTable, withCancel: nil)
-//                tableView.reloadData()
-//                print(userData.getDefaultStoryCount())
             }
         }
         
         //refresh
         // 查看是否是在刷新
-        if self.refreshControl.isRefreshing == true && scrollView.isDecelerating{
-            userData.retrievingStory = true
+        if self.refreshControl.isRefreshing == true && userData.isretrievingStory == false && scrollView.isDecelerating{
+            userData.isretrievingStory = true
 //            userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
 //            tableView.reloadData()
         }
@@ -253,7 +226,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         self.tableView.reloadData()
         // 通过设定endRefreshing将小菊花停止
         self.refreshControl.endRefreshing()
-        self.userData.retrievingStory = false
+        self.userData.isretrievingStory = false
         print("reload data disable")
     }
 }
