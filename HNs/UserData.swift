@@ -74,7 +74,24 @@ class UserData{
     }
     // get default list
     func getdefaultList()->Storylist{
-        return self.listTypeMap[self.defaulttype]!
+        switch self.defaulttype {
+        case .top:
+            return self.toplist
+        case .new:
+            return self.newlist
+        case .show:
+            return self.showlist
+        }
+    }
+    func setdefaultList(loadlist:[Story] ){
+        switch self.defaulttype {
+        case .top:
+            self.toplist.list = loadlist
+        case .new:
+            self.newlist.list = loadlist
+        case .show:
+            self.showlist.list = loadlist
+        }
     }
     // get default limitaion
     func getdefaultlimit()->UInt{
@@ -87,22 +104,35 @@ class UserData{
             return self.showLimitation
         }
     }
+    // get default limitaion
+    func setdefaultlimit(withInterval:UInt)->UInt{
+        switch self.defaulttype {
+        case .top:
+            self.topLimitation += withInterval
+            return self.topLimitation
+        case .new:
+            self.newLimitation += withInterval
+            return self.newLimitation
+        case .show:
+            self.showLimitation += withInterval
+            return self.showLimitation
+        }
+    }
     // get the count of default story
     func getDefaultStoryCount() -> Int{
         return self.getdefaultList().getcount()
     }
     // default refresh
     func retrievedefault(completionHandler: @escaping ()->Void ,withCancel:((Error) -> Void)? = nil){
-        
-        let listTemp = self.getdefaultList()
-        print(listTemp)
+//        let listTemp = self.getdefaultList()
         BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
-        print(self.getdefaultList().list.count)
+//        self.setdefaultList(loadlist: result)
     }
 
     // default loadmore
-    func loadmoredefault(completionHandler:(()->Void)? = nil, withCancel:((Error) -> Void)? = nil){
-        BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
+    func loadmoredefault(completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
+        let limitaionTemp = self.setdefaultlimit(withInterval: self.limitationinterval)
+        BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: limitaionTemp,completionHandler: completionHandler, withCancel: withCancel)
     }
     
     

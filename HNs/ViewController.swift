@@ -24,7 +24,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
     // tabelview
     var tableView:UITableView!
-    
+    //activity Indicator
+    var activityIndicator:UIActivityIndicatorView!
     
     // Error
     var errorMessageLabel: UILabel!
@@ -89,6 +90,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // Do any additional setup after loading the view.
         //  UI
         configureUI()
+        // 加载小菊花
+        activityIndicator.startAnimating()
         // 开始的时候就应该检索一次
         userData!.retrievingStory = true
         // 这里再进行loadlist
@@ -136,6 +139,11 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         refreshControl.attributedTitle = NSAttributedString(string: pullToRefreshStr) // refreshControl 上展示的文字
         tableView.insertSubview(refreshControl, at: 0)// 插到最上面
         
+        //activity Indicator
+        activityIndicator = UIActivityIndicatorView(style:UIActivityIndicatorView.Style.medium)
+        activityIndicator.center=self.view.center
+        self.view.addSubview(activityIndicator);
+        
         // Error
         errorMessageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
         errorMessageLabel.textColor = ErrorMessageLabelTextColor
@@ -161,7 +169,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         if space >= self.loadthrehold && scrollContentSizeHeight != 0.0 && scrollView.isDecelerating{
             // TODO
             if userData.isLoadingMore == false{
-                userData.loadingStory = true
+//                userData.loadingStory = true
+                userData.isLoadingMore = true
                 userData.loadmoredefault(completionHandler: reloadTable, withCancel: nil)
 //                tableView.reloadData()
 //                print(userData.getDefaultStoryCount())
@@ -172,7 +181,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 查看是否是在刷新
         if self.refreshControl.isRefreshing == true && scrollView.isDecelerating{
             userData.retrievingStory = true
-            userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
+//            userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
 //            tableView.reloadData()
         }
     }
@@ -196,10 +205,13 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             print{"Segment Error!"}
         }
         // 完事会触发刷新
-        userData.retrievingStory = true
-        userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
-//        tableView.reloadData()
-        print("reload data ori")
+        // 切换seg没必要刷新
+//        userData.retrievingStory = true
+//        userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
+////        tableView.reloadData()
+//        print("reload data ori")
+        self.tableView.reloadData()
+        print("seg")
     }
     // fail
     func loadingFailed(_ error: Error?) -> Void {
@@ -220,15 +232,29 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     }
     
     // 包裹refresh
+    // 这个函数会在刷新时候自动调用
     @objc func viewRetrievedefault(withCancel:((Error) -> Void)? = nil){
-        userData.retrievedefault(completionHandler: self.reloadTable, withCancel:  withCancel)
-        print("reload oc")
+        userData.retrievedefault(completionHandler: self.reloadTableDisable, withCancel:  withCancel)
+//        print("reload oc")
     }
     
     // reload table
     func reloadTable() -> Void{
+        // 只有当默认list数据出来后再停止
+        if (userData.getdefaultList().getcount() != 0 ){
+            activityIndicator.stopAnimating()
+            self.tableView.reloadData()
+            self.userData.isLoadingMore = false
+            print("reload data")
+        }
+    }
+    
+    func reloadTableDisable() -> Void{
         self.tableView.reloadData()
-        print("reload data")
+        // 通过设定endRefreshing将小菊花停止
+        self.refreshControl.endRefreshing()
+        self.userData.retrievingStory = false
+        print("reload data disable")
     }
 }
 

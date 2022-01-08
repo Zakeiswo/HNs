@@ -33,6 +33,7 @@ class BaseManager{
     // 通过逃逸闭包写入list
     func retrieveStories(loadList:Storylist,storyLimitaion:UInt, completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
         var count = storyLimitaion
+//        var resultList:[Story] = []
         var storiesMap = [Int:Story]()
         let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:count )
         // 通过observeSingleEvent监听,single的话返回后就立刻取消
@@ -64,21 +65,21 @@ class BaseManager{
                             sortedStories.append(storiesMap[storyId]!)
                         }
                         // 在这执行逃逸闭包
-                        defer{
-                            completionHandler()
-                        }
+                        print(sortedStories.count)
+//                        resultList = sortedStories
                         loadList.list = sortedStories
+                        completionHandler()
                         
                     }
                     // TODO with Error
                 }, withCancel: withCancel)
             }
         }, withCancel: withCancel)
-        
+//        return resultList
     }
     
     // load more
-    func loadmore(loadList:Storylist,storyLimitaion:UInt, completionHandler: (()->Void)? = nil,withCancel:((Error) -> Void)? = nil){
+    func loadmore(loadList:Storylist,storyLimitaion:UInt, completionHandler: @escaping ()->Void,withCancel:((Error) -> Void)? = nil){
         var storiesMap = [Int:Story]()
         var count = storyLimitaion
         // 需要通过
@@ -109,8 +110,9 @@ class BaseManager{
                         }
                         // 赋值上去
                         loadList.list = sortedStories
+                        print(sortedStories.count)
                         // 在这执行逃逸闭包
-                        completionHandler!()
+                        completionHandler()
                     }
                     // TODO with Error
                 },withCancel: withCancel)
