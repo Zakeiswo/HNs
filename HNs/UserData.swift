@@ -16,13 +16,16 @@ class UserData{
     var showlist:Storylist
     
     var defaulttype:StoryType
+    // 记录不同的移动位置
     
+    var toplocation:CGPoint
+    var newlocation:CGPoint
+    var showlocation:CGPoint
     
     // 读取的数量
     var topLimitation: UInt = 30
     var newLimitation: UInt = 30
     var showLimitation: UInt = 30
-    
     var limitationinterval:UInt = 10
     
     
@@ -33,22 +36,26 @@ class UserData{
     var isLoadingMore:Bool! // 是否正在loadmore
     // 防止重复刷新
     var isretrievingStory:Bool! // 是否正在refresh
+//    // 方式未加载完数据就使用
+//    var allListLoaded:Bool!
     
     //dic
-    let listTypeMap:[StoryType:Storylist]
+//    let listTypeMap:[StoryType:Storylist]
     
     required init(){
         defaulttype = .top
         isretrievingStory = false
         loadmoreLimitaion = 0 // 最初这个加载更多的限制值为0
-        isLoadingMore = false
         
     
         toplist = Storylist()
         newlist = Storylist()
         showlist = Storylist()
         
-        listTypeMap = [StoryType.top: toplist, StoryType.new: newlist, StoryType.show: showlist]
+        toplocation = CGPoint.init(x: 0, y: 0)
+        newlocation = CGPoint.init(x: 0, y: 0)
+        showlocation = CGPoint.init(x: 0, y: 0)
+//        listTypeMap = [StoryType.top: toplist, StoryType.new: newlist, StoryType.show: showlist]
     }
     
     func loadList(completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
@@ -117,6 +124,51 @@ class UserData{
             return self.showLimitation
         }
     }
+    // init default limitaion
+    func initdefaultlimit(initLimit:UInt){
+        switch self.defaulttype {
+        case .top:
+            self.topLimitation = initLimit
+        case .new:
+            self.newLimitation = initLimit
+        case .show:
+            self.showLimitation = initLimit
+        }
+    }
+    // set defalt loaction
+    func setdefaultloaction(location:CGPoint){
+        switch self.defaulttype {
+        case .top:
+            self.toplocation = location
+        case .new:
+            self.newlocation = location
+        case .show:
+            self.showlocation = location
+        }
+    }
+    
+    // get defalt loaction
+    func getdefaultloaction() -> CGPoint{
+        switch self.defaulttype {
+        case .top:
+            return self.toplocation
+        case .new:
+            return self.newlocation
+        case .show:
+            return self.showlocation
+        }
+    }
+    // refresh init corresponding list
+    func initWhileRefresh(){
+        // init the limitaion
+        self.initdefaultlimit(initLimit: 30)
+        // init the position
+        self.setdefaultloaction(location: CGPoint.init(x: 0, y: 0))
+    }
+    
+    
+    
+    
     // get the count of default story
     func getDefaultStoryCount() -> Int{
         return self.getdefaultList().getcount()
@@ -131,7 +183,16 @@ class UserData{
     // default loadmore
     func loadmoredefault(completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
         let limitaionTemp = self.setdefaultlimit(withInterval: self.limitationinterval)
-        BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: limitaionTemp,completionHandler: completionHandler, withCancel: withCancel)
+        BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: limitaionTemp,withInterval: self.limitationinterval ,completionHandler: completionHandler, withCancel: withCancel)
+    }
+    
+    func loadfinished() -> Bool{
+        if (self.toplist.list.isEmpty || self.newlist.list.isEmpty || self.showlist.list.isEmpty){
+            return false
+        }
+        else{
+            return true
+        }
     }
     
     

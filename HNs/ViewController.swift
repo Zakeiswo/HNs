@@ -100,6 +100,9 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         tableView.frame = CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
         // 注册cell
 //        tableView.register(UITableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
         // 取出分隔线
@@ -125,6 +128,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         //activity Indicator
         activityIndicator = UIActivityIndicatorView(style:UIActivityIndicatorView.Style.medium)
         activityIndicator.center=self.view.center
+        activityIndicator.color = .gray
         self.view.addSubview(activityIndicator);
         
         // Error
@@ -135,7 +139,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     }
     //scroll
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //let space = scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height
         let scrollViewHeight = scrollView.frame.size.height
         let scrollContentSizeHeight = scrollView.contentSize.height
         let scrollOffset = scrollView.contentOffset.y
@@ -154,8 +157,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 查看是否是在刷新
         if self.refreshControl.isRefreshing == true && userData.isretrievingStory == false && scrollView.isDecelerating{
             userData.isretrievingStory = true
-//            userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
-//            tableView.reloadData()
         }
     }
     
@@ -168,6 +169,12 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     
     // segment change the type
     @objc func changeStoryType(_ sender: UISegmentedControl){
+        
+        // 在改变seg前会记录滚动位置
+        userData.setdefaultloaction(location: self.tableView.contentOffset)
+        let scrollOffset = self.tableView.contentOffset.y
+        print(scrollOffset)
+        
         if sender.selectedSegmentIndex == 0{
             userData.setdefaultList(type: .top)
         } else if sender.selectedSegmentIndex == 1{
@@ -177,24 +184,18 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         } else {
             print{"Segment Error!"}
         }
-        // 完事会触发刷新
-        // 切换seg没必要刷新
-//        userData.retrievingStory = true
-//        userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
-////        tableView.reloadData()
-//        print("reload data ori")
+        
         self.tableView.reloadData()
+        // 设定新的位置
+        self.tableView.setContentOffset(userData.getdefaultloaction(), animated: false)
         print("seg")
     }
     // fail
     func loadingFailed(_ error: Error?) -> Void {
         // Data clear
         userData.loadingDataFailded()
-//        self.tableView.reloadData()
+        self.tableView.reloadData()
         self.showErrorMessage(self.FetchErrorMessage) //Error
-        guard #available(iOS 13.0, *) else{
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        }
     }
     // Error
     //展示了对应的错误信息
@@ -207,14 +208,15 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     // 包裹refresh
     // 这个函数会在刷新时候自动调用
     @objc func viewRetrievedefault(withCancel:((Error) -> Void)? = nil){
+        // init limitation and position
+        userData.initWhileRefresh()
         userData.retrievedefault(completionHandler: self.reloadTableDisable, withCancel:  withCancel)
-//        print("reload oc")
     }
     
     // reload table
     func reloadTable() -> Void{
         // 只有当默认list数据出来后再停止
-        if (userData.getdefaultList().getcount() != 0 ){
+        if (userData.loadfinished()){
             activityIndicator.stopAnimating()
             self.tableView.reloadData()
             self.userData.isLoadingMore = false
@@ -229,5 +231,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         self.userData.isretrievingStory = false
         print("reload data disable")
     }
+    
 }
 
