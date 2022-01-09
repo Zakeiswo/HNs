@@ -128,6 +128,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         //activity Indicator
         activityIndicator = UIActivityIndicatorView(style:UIActivityIndicatorView.Style.medium)
         activityIndicator.center=self.view.center
+        activityIndicator.color = .gray
         self.view.addSubview(activityIndicator);
         
         // Error
@@ -138,7 +139,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     }
     //scroll
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //let space = scrollView.contentSize.height - scrollView.contentOffset.y - scrollView.frame.height
         let scrollViewHeight = scrollView.frame.size.height
         let scrollContentSizeHeight = scrollView.contentSize.height
         let scrollOffset = scrollView.contentOffset.y
@@ -157,8 +157,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 查看是否是在刷新
         if self.refreshControl.isRefreshing == true && userData.isretrievingStory == false && scrollView.isDecelerating{
             userData.isretrievingStory = true
-//            userData.retrievedefault(completionHandler: reloadTable, withCancel: nil)
-//            tableView.reloadData()
         }
     }
     
@@ -175,7 +173,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 在改变seg前会记录滚动位置
         userData.setdefaultloaction(location: self.tableView.contentOffset)
         let scrollOffset = self.tableView.contentOffset.y
-//        let space = scrollOffset + scrollViewHeight - scrollContentSizeHeight
         print(scrollOffset)
         
         if sender.selectedSegmentIndex == 0{
@@ -187,25 +184,17 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         } else {
             print{"Segment Error!"}
         }
-        // 完事会触发刷新
-        // 切换seg没必要刷新
         
-        // check postion
-//        let scrollViewHeight = self.tableView.frame.size.height
-//        let scrollContentSizeHeight = self.tableView.contentSize.height
-        
-
         self.tableView.reloadData()
-        self.tableView.setContentOffset(userData.getdefaultloaction(), animated: false)
-//        completionHandler()
         // 设定新的位置
+        self.tableView.setContentOffset(userData.getdefaultloaction(), animated: false)
         print("seg")
     }
     // fail
     func loadingFailed(_ error: Error?) -> Void {
         // Data clear
         userData.loadingDataFailded()
-//        self.tableView.reloadData()
+        self.tableView.reloadData()
         self.showErrorMessage(self.FetchErrorMessage) //Error
     }
     // Error
@@ -222,7 +211,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // init limitation and position
         userData.initWhileRefresh()
         userData.retrievedefault(completionHandler: self.reloadTableDisable, withCancel:  withCancel)
-//        print("reload oc")
     }
     
     // reload table
@@ -244,8 +232,5 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         print("reload data disable")
     }
     
-//    func resetConten() -> Void{
-//        self.tableView.setContentOffset(userData.getdefaultloaction(), animated: false)
-//    }
 }
 
