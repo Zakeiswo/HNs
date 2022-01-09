@@ -32,10 +32,9 @@ class BaseManager{
     //refresh
     // 通过逃逸闭包写入list
     func retrieveStories(loadList:Storylist,storyLimitaion:UInt, completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
-        var count = storyLimitaion
 //        var resultList:[Story] = []
         var storiesMap = [Int:Story]()
-        let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:count )
+        let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:storyLimitaion )
         // 通过observeSingleEvent监听,single的话返回后就立刻取消
         query.observeSingleEvent(of: .value, with: { snapshot in
             if !snapshot.exists(){
@@ -43,6 +42,8 @@ class BaseManager{
                 return
             }
             var storyIds = snapshot.value as! [Int]
+            // 实际的数量可能小于limitation, 应该通过story
+            var count = storyIds.count
             for (i, storyId) in storyIds.enumerated() {
                 let q = self.ref.child(self.v0ChildRef).child(self.itemChildRef).child(String(storyId))
                 // 有时候可以获得id,但是snapshot是null
@@ -69,7 +70,6 @@ class BaseManager{
 //                        resultList = sortedStories
                         loadList.list = sortedStories
                         completionHandler()
-                        
                     }
                     // TODO with Error
                 }, withCancel: withCancel)
@@ -79,9 +79,9 @@ class BaseManager{
     }
     
     // load more
-    func loadmore(loadList:Storylist,storyLimitaion:UInt, completionHandler: @escaping ()->Void,withCancel:((Error) -> Void)? = nil){
+    func loadmore(loadList:Storylist,storyLimitaion:UInt , withInterval :UInt, completionHandler: @escaping ()->Void,withCancel:((Error) -> Void)? = nil){
         var storiesMap = [Int:Story]()
-        var count = storyLimitaion
+//        var count = storyLimitaion
         // 需要通过
         let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst: storyLimitaion)
         query.observeSingleEvent(of: .value, with: { snapshot in
@@ -90,8 +90,16 @@ class BaseManager{
                 print("Fail to loading the data of the snapshot during func loadmore")
                 return
             }
-            let storyIds = snapshot.value as! [Int]
-            for storyId in storyIds {
+            var storyIds = snapshot.value as! [Int]
+            var count = storyIds.count
+            // 有可能剩余的数据小于withInterval,但是还是得加载上
+            if (count < storyLimitaion - withInterval){
+                // 实际的数量可能小于limitation, 应该通过story
+                print("Can't load more! The API Can not provide more data!")
+                completionHandler() // 复位
+                return
+            }
+            for (i, storyId) in storyIds.enumerated() {
                 let q = self.ref.child(self.v0ChildRef).child(self.itemChildRef).child(String(storyId))
                 q.observeSingleEvent(of: .value, with: { snapshot in
                     // snapshot可能出现原本的id非空,但是snapshot为空的情况
@@ -100,9 +108,10 @@ class BaseManager{
                     }
                     else{
                         count = count - 1
+                        storyIds.remove(at:i) // 对应信息可能为空
                         print("Missing the data of the snapshot during func loadmore")
                     }
-                    if storiesMap.count == Int(storyLimitaion){
+                    if storiesMap.count == Int(count){
                         var sortedStories = [Story]()
                         // 将字典转化为数组
                         for storyId in storyIds {
@@ -137,6 +146,5 @@ class BaseManager{
         
         return Story(id: id,title: title, url: url, by: by, score: score, text: text,time: time,type: type,kids: kids, descendants: descendants)
     }
-    
     
 }
