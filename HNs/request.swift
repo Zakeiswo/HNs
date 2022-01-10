@@ -32,7 +32,6 @@ class BaseManager{
     //refresh
     // 通过逃逸闭包写入list
     func retrieveStories(loadList:Storylist,storyLimitaion:UInt, completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
-//        var resultList:[Story] = []
         var storiesMap = [Int:Story]()
         let query = ref.child(self.v0ChildRef).child(loadList.StoryTypeChildRefMap[loadList.type]!).queryLimited(toFirst:storyLimitaion )
         // 通过observeSingleEvent监听,single的话返回后就立刻取消
@@ -67,7 +66,6 @@ class BaseManager{
                         }
                         // 在这执行逃逸闭包
                         print(sortedStories.count)
-//                        resultList = sortedStories
                         loadList.list = sortedStories
                         completionHandler()
                     }
@@ -75,7 +73,6 @@ class BaseManager{
                 }, withCancel: withCancel)
             }
         }, withCancel: withCancel)
-//        return resultList
     }
     
     // load more

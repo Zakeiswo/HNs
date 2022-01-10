@@ -15,9 +15,10 @@ class UserData{
     var newlist:Storylist
     var showlist:Storylist
     
+    // 用来确认默认的类型
     var defaulttype:StoryType
-    // 记录不同的移动位置
     
+    // 记录不同的移动位置
     var toplocation:CGPoint
     var newlocation:CGPoint
     var showlocation:CGPoint
@@ -30,23 +31,17 @@ class UserData{
     
     
     // load more
-
     var loadmoreLimitaion:UInt!
     // 防止重复加载
     var isLoadingMore:Bool! // 是否正在loadmore
     // 防止重复刷新
     var isretrievingStory:Bool! // 是否正在refresh
-//    // 方式未加载完数据就使用
-//    var allListLoaded:Bool!
-    
-    //dic
-//    let listTypeMap:[StoryType:Storylist]
     
     required init(){
         defaulttype = .top
         isretrievingStory = false
+        isLoadingMore = false
         loadmoreLimitaion = 0 // 最初这个加载更多的限制值为0
-        
     
         toplist = Storylist()
         newlist = Storylist()
@@ -55,7 +50,6 @@ class UserData{
         toplocation = CGPoint.init(x: 0, y: 0)
         newlocation = CGPoint.init(x: 0, y: 0)
         showlocation = CGPoint.init(x: 0, y: 0)
-//        listTypeMap = [StoryType.top: toplist, StoryType.new: newlist, StoryType.show: showlist]
     }
     
     func loadList(completionHandler: @escaping ()->Void, withCancel:((Error) -> Void)? = nil){
@@ -158,6 +152,7 @@ class UserData{
             return self.showlocation
         }
     }
+    
     // refresh init corresponding list
     func initWhileRefresh(){
         // init the limitaion
@@ -176,6 +171,10 @@ class UserData{
     // default refresh
     func retrievedefault(completionHandler: @escaping ()->Void ,withCancel:((Error) -> Void)? = nil){
 //        let listTemp = self.getdefaultList()
+        if(self.isretrievingStory == false){
+            completionHandler()
+            return
+        }
         BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
 //        self.setdefaultList(loadlist: result)
     }
@@ -186,6 +185,7 @@ class UserData{
         BaseManager.shared.loadmore(loadList: self.getdefaultList(), storyLimitaion: limitaionTemp,withInterval: self.limitationinterval ,completionHandler: completionHandler, withCancel: withCancel)
     }
     
+    // 查看是否加载完
     func loadfinished() -> Bool{
         if (self.toplist.list.isEmpty || self.newlist.list.isEmpty || self.showlist.list.isEmpty){
             return false

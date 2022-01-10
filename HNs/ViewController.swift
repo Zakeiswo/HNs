@@ -37,7 +37,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
         refreshControl = UIRefreshControl()
-        // 将init 和 load 数据分开
+        // 将userdata的 init 和 load 数据分开
         userData = UserData()
        }
     
@@ -48,7 +48,6 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     }
     // 创建一个cell的样子
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // 这个是控制哪里
         let story = userData.getdefaultList().list[indexPath.row]
         var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as UITableViewCell?
         // 如果是空的
@@ -56,7 +55,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             cell = UITableViewCell.init(style: .subtitle, reuseIdentifier: self.cellIdentifier);
         }
         cell?.textLabel?.text = story.title
-        cell?.detailTextLabel?.text = "\(story.score) points by \(story.by)"
+        cell?.detailTextLabel?.text = "\(story.score) points by \(story.by)\(story.commentCountText)"
         return cell!
         // TODO 丰富cell
     }
@@ -75,8 +74,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         }
     }
     
-    // didload
-    
+    // view didload
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -149,14 +147,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             // TODO
             if userData.isLoadingMore == false{
                 userData.isLoadingMore = true
-                userData.loadmoredefault(completionHandler: reloadTable, withCancel: nil)
+                userData.loadmoredefault(completionHandler: reloadTableLoadmore, withCancel: loadingFailed(_:) )
             }
-        }
-        
-        //refresh
-        // 查看是否是在刷新
-        if self.refreshControl.isRefreshing == true && userData.isretrievingStory == false && scrollView.isDecelerating{
-            userData.isretrievingStory = true
         }
     }
     
@@ -196,6 +188,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         userData.loadingDataFailded()
         self.tableView.reloadData()
         self.showErrorMessage(self.FetchErrorMessage) //Error
+        print("faliing")
     }
     // Error
     //展示了对应的错误信息
@@ -210,7 +203,8 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     @objc func viewRetrievedefault(withCancel:((Error) -> Void)? = nil){
         // init limitation and position
         userData.initWhileRefresh()
-        userData.retrievedefault(completionHandler: self.reloadTableDisable, withCancel:  withCancel)
+        userData.isretrievingStory = true
+        userData.retrievedefault(completionHandler: self.reloadTableDisable, withCancel:  loadingFailed(_:))
     }
     
     // reload table
@@ -219,9 +213,14 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         if (userData.loadfinished()){
             activityIndicator.stopAnimating()
             self.tableView.reloadData()
-            self.userData.isLoadingMore = false
             print("reload data")
         }
+    }
+    func reloadTableLoadmore() -> Void{
+        // 只有当默认list数据出来后再停止
+            self.tableView.reloadData()
+            self.userData.isLoadingMore = false
+            print("reload data loadmore")
     }
     
     func reloadTableDisable() -> Void{
@@ -229,7 +228,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         // 通过设定endRefreshing将小菊花停止
         self.refreshControl.endRefreshing()
         self.userData.isretrievingStory = false
-        print("reload data disable")
+        print("reload data refresh")
     }
     
 }
