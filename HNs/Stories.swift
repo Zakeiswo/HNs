@@ -66,15 +66,15 @@ extension Story{
     var commentCountText: String {
         // 要是是一个无评论的就是显示字
         if let number = descendants {
-            if number <= 0 { return "评论" }
+            if number <= 0 { return ", go comment." }
             // 要是小于1k就显示数量
-            if number < 1000 { return "\(number)" }
+            if number < 1000 { return ", \(number) comment(s)" }
             // 要是大于1k就是缩写
-            return String(format: "%.1fK", Double(number) / 1000)
+            return String(format: ", %.1fK comments", Double(number) / 1000)
             // 这里强制转化保证是个小数,要不然除了之后还是一个整数
         }
         else{
-            return "评论"
+            return ""
         }
     }
 }
