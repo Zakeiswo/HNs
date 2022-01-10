@@ -161,22 +161,15 @@ class UserData{
         self.setdefaultloaction(location: CGPoint.init(x: 0, y: 0))
     }
     
-    
-    
-    
     // get the count of default story
     func getDefaultStoryCount() -> Int{
         return self.getdefaultList().getcount()
     }
     // default refresh
     func retrievedefault(completionHandler: @escaping ()->Void ,withCancel:((Error) -> Void)? = nil){
-//        let listTemp = self.getdefaultList()
-        if(self.isretrievingStory == false){
-            completionHandler()
-            return
+        if(self.isretrievingStory == true){
+            BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
         }
-        BaseManager.shared.retrieveStories(loadList: self.getdefaultList(), storyLimitaion: self.getdefaultlimit(),completionHandler: completionHandler, withCancel: withCancel)
-//        self.setdefaultList(loadlist: result)
     }
 
     // default loadmore
